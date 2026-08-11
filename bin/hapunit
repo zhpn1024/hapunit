@@ -3,7 +3,7 @@ import os, sys, argparse, time
 from hapunit.run import commands, load
 from os.path import isfile
 
-VERSION = '0.1.0'
+VERSION = '0.1.2'
 #commands = {}
 
 def main():

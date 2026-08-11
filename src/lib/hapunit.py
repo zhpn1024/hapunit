@@ -17,7 +17,7 @@ def changechr(chr):
 
 def export_corr(corr, filename, data = None, sel = None):
   outfile = open(filename, 'w')
-  from zbio import io
+  from hapunit.zbio import io
   l = len(corr)
   if data is None:
     ids = list(range(l))
