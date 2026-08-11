@@ -1,0 +1,59 @@
+#!/bin/env python3
+import os, sys, argparse, time
+from hapunit.run import commands, load
+from os.path import isfile
+
+VERSION = '0.1.0'
+#commands = {}
+
+def main():
+
+  description = "%(prog)s -- Haplotype unit processing tool"
+  epilog = "For command line options of each command, type: %(prog)s COMMAND -h"
+  argparser = argparse.ArgumentParser( description = description, epilog = epilog )
+  argparser.add_argument("--version", action="version", version="%(prog)s "+VERSION)
+
+  subparsers = argparser.add_subparsers( dest = 'subcommand' )
+  for cmd in commands:
+    pi=subparsers.add_parser(cmd, help=commands[cmd])
+    #commands[cmd]['parser'](pi)
+  #print(dir(subparsers))
+  if len(sys.argv)==1:
+    argparser.print_help()
+    exit(0)
+
+  #args = argparser.parse_args()
+
+  cmd  = sys.argv[1] # args.subcommand
+  if cmd in commands: # commands.has_key(cmd):
+    start = time.time()
+    sc = load(cmd)
+    #print(sc, sc.set_parser)
+    parser = subparsers.choices[cmd]
+    sc.set_parser(parser)
+    #parser.add_argument("--force", action="store_true", help="Force run without existence checking")
+    args = argparser.parse_args()
+    run = sc.run(args)
+    if run:
+      end = time.time()
+      print('{} Done! Time used: {} s.'.format(time.ctime(), (end - start)))
+  elif cmd.startswith('--version'):
+    print(VERSION)
+  else:
+    argparser.print_help()
+
+def run_cmds(cmds, res_check = None):
+  if res_check is not None and isfile(res_check):
+    print('Skip exist: {}'.format(res_check))
+    return
+  for c in cmds:
+    print(c)
+    r = os.system(c)
+    if r != 0:
+      print('Error!')
+      exit(1)
+
+
+if __name__ == '__main__':
+  main()
+
